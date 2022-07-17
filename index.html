@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./ui.css">
+    <link rel="stylesheet" href="./resposive.css">
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+
+<body class="ui-overflow-y-hidden ui-overflow-x-hidden">
+    <div class="ui-h-vh-100 ui-w-vw-100 ui-position-relative ui-overflow-y-hidden">
+        <div class="ui-w-100 ui-h-76 ui-position-absolute ui-w-flatform-extra-small ui-position-xy-center ui-border-radius-8 ui-spacing-2"
+            style="box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
+            <h2 class="ui-text-one ui-font-medium ui-fs-24">Mode Nam-ui</h2>
+            <div class="ui-d-flex ui-mb-10 ui-my-10">
+                <div class="ui-mr-10">
+                    <button id="one-line-button" type="button" class="btn btn-outline-primary"> One line</button>
+                </div>
+                <div>
+                    <button id="one-line-button-edit-button" type="button" class="btn btn-outline-primary"> One line
+                        edit</button>
+                </div>
+            </div>
+            <div class="ui-mt-10 ui-mb-10">
+                <p class="mode-lable">mode</p>
+                <div id="mode-option">
+                </div>
+            </div>
+            <div class="form-floating">
+                <textarea class="form-control ui-overflow-y-hidden" placeholder="Leave a comment here" id="floatingTextarea"
+                    style="height: 100px"></textarea>
+                <!-- <textarea class="form-control" placeholder="Leave a comment here" id="inputResults"
+                    style="height: 100px; opacity: 0;"></textarea> -->
+            </div>
+            <div class="ui-mt-10">
+                Results
+                <div id="resultsCss"></div>
+                <div id="resultsClicks">
+                    <button id="coppy" type="button" class="btn btn-outline-danger"> Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var text = ""
+    var mode = true; // true = one line else one line edit 
+    var _modeSelect = 0;
+    // (function () {
+    $("#one-line-button").click(function () {
+        mode = true;
+        $("#mode-option").html("")
+        $(".mode-lable").html(`One line`)
+    })
+    $("#one-line-button-edit-button").click(function () {
+        mode = false;
+        let htmlEdit = "";
+        let btnColor = ["primary", "secondary", "success", "danger", "warning", "info"]
+        for (let index = 1; index <= 6; index++) {
+            htmlEdit += `<button onclick="pickSelectMode(${index})"  type="button" class="btn btn-outline-${btnColor[index - 1]}">${index}</button>`
+        }
+        $(".mode-lable").html(`One line - ${_modeSelect} edit`)
+        $("#mode-option").html(htmlEdit)
+        text = $("#floatingTextarea").val();
+    })
+    $("#coppy").click(async function () {
+        text = $("#floatingTextarea").val();
+        let textResults = ""
+        if (mode === true) {
+            textResults = await text.replace(/\n/g, "");
+            textResults = await textResults.replaceAll(/\s/g, '')
+        }
+        if (mode === false) {
+            if (_modeSelect !== 0) {
+                let _text = await text.replaceAll(/\s/g, '')
+                let arrayText = await _text.split("}")
+                let countArray = 0;
+                arrayText.forEach((element, index) => {
+                    if (index === arrayText['length'] - 1) { return "" }
+                    countArray++;
+                    let elementHandler = element.toString().replace(/\n/g, "");
+                    elementHandler = elementHandler.replaceAll(/\s/g, '')
+                    if (countArray === _modeSelect) {
+                        console.log(countArray);
+                        console.log(_modeSelect);
+                        textResults += `${elementHandler}}\n`
+                        countArray = 0;
+                        return element;
+                    } else {
+                        return textResults += `${elementHandler}}`
+                    }
+                });
+                console.log(textResults);
+            } else {
+                textResults = await text.replace(/\n/g, "");
+                textResults = await textResults.replaceAll(/\s/g, '')
+            }
+
+        }
+        var dummy = document.createElement("textarea");
+        document.body.appendChild(dummy);
+        dummy.value = textResults;
+        dummy.select();
+        document.execCommand('copy')
+    })
+    function pickSelectMode(index) {
+        _modeSelect = index;
+        $(".mode-lable").html(`One line - ${_modeSelect} edit`)
+    }
+
+
+
+</script>
+
+</html>
